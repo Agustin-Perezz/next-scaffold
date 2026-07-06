@@ -1,6 +1,6 @@
 # next-scaffold
 
-A production-ready [Next.js](https://nextjs.org) starter built on the App Router with React 19, TypeScript strict mode, base-ui + shadcn components, Tailwind CSS v4, Biome for lint/format, Playwright for E2E, and Sentry for monitoring.
+A production-ready [Next.js](https://nextjs.org) starter built on the App Router with React 19, TypeScript strict mode, base-ui + shadcn components, Tailwind CSS v4, Biome for lint/format, Playwright for E2E, and Sentry for monitoring. The scaffold follows a shift-left approach: linting, type checking, security scanning, and E2E tests run on every push and pull request so issues are caught as early as possible in the development cycle.
 
 ## Tech Stack
 
@@ -15,6 +15,7 @@ A production-ready [Next.js](https://nextjs.org) starter built on the App Router
 | Lint / Format   | Biome 2                                        |
 | E2E             | Playwright (Chromium)                          |
 | Monitoring      | Sentry (`@sentry/nextjs`)                      |
+| Security scan   | Snyk (SARIF → GitHub Code Scanning)            |
 | Package manager | pnpm 9                                         |
 | Git hooks       | Husky + nano-staged                            |
 
@@ -101,6 +102,8 @@ The `.github/workflows/ci.yml` workflow runs on push to `main` and on pull reque
 3. E2E tests (Playwright, Chromium only)
 4. Build (`next build` with Sentry source map upload)
 
+A `snyk` job runs in parallel, scanning dependencies for high-severity vulnerabilities and uploading the results as SARIF to GitHub Code Scanning. It is allowed to continue on error so findings do not block the pipeline.
+
 ### Required GitHub Secrets
 
 Configure these in **Settings → Secrets and variables → Actions**:
@@ -111,6 +114,7 @@ Configure these in **Settings → Secrets and variables → Actions**:
 | `SENTRY_AUTH_TOKEN`      | Sentry auth token for source map upload |
 | `SENTRY_ORG`             | Sentry organization slug               |
 | `SENTRY_PROJECT`         | Sentry project slug                    |
+| `SNYK_TOKEN`             | Snyk API token for vulnerability scans |
 
 ## Documentation
 
