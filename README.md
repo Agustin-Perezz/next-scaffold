@@ -1,8 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# next-scaffold
+
+A production-ready [Next.js](https://nextjs.org) starter built on the App Router with React 19, TypeScript strict mode, base-ui + shadcn components, Tailwind CSS v4, Biome for lint/format, Playwright for E2E, and Sentry for monitoring.
+
+## Tech Stack
+
+| Area            | Choice                                        |
+| --------------- | --------------------------------------------- |
+| Framework       | Next.js 16 (App Router)                        |
+| UI runtime      | React 19                                       |
+| Language        | TypeScript (strict)                           |
+| Components      | base-ui + shadcn                               |
+| Styling         | Tailwind CSS v4                                |
+| Forms           | react-hook-form + zod                          |
+| Lint / Format   | Biome 2                                        |
+| E2E             | Playwright (Chromium)                          |
+| Monitoring      | Sentry (`@sentry/nextjs`)                      |
+| Package manager | pnpm 9                                         |
+| Git hooks       | Husky + nano-staged                            |
+
+## Folder Structure
+
+```
+next-scaffold/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                # Lint, typecheck, E2E, build pipeline
+├── docs/                         # Engineering guidelines
+│   ├── 01_COMPONENT-PATTERNS.md
+│   ├── 02_FRONTEND-FOLDER-STRUCTURE.md
+│   └── 04_TYPESCRIPT-STANDARDS.md
+├── public/                       # Static assets served at root
+├── src/
+│   ├── app/                      # App Router routes (pages, layouts, actions)
+│   ├── components/
+│   │   └── ui/                   # Reusable base-ui / shadcn primitives
+│   └── lib/
+│       └── utils.ts              # Shared utilities (cn, helpers)
+├── tests/                        # Playwright E2E specs
+├── biome.json                    # Linter & formatter config
+├── next.config.ts                # Next.js configuration
+├── package.json
+├── playwright.config.ts
+└── tsconfig.json                 # Path alias: @/* -> ./src/*
+```
+
+See [`AGENTS.md`](./AGENTS.md) for the engineering conventions agents and contributors should follow.
 
 ## Setup
 
-1. Copy `.env.example` to `.env.local` and fill in values:
+1. Copy `.env.example` to `.env.local` and fill in the values:
 
    ```bash
    cp .env.example .env.local
@@ -21,34 +67,34 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
    pnpm dev
    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs at [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Script            | Description                              |
-| ----------------- | ---------------------------------------- |
-| `pnpm dev`        | Start development server                 |
-| `pnpm build`      | Production build                         |
-| `pnpm start`      | Start production server                   |
-| `pnpm lint`       | Run Biome lint & format checks           |
-| `pnpm format`     | Auto-format with Biome                    |
-| `pnpm typecheck`  | Run TypeScript type checking             |
-| `pnpm test`       | Run Playwright E2E tests                  |
-| `pnpm test:ui`    | Run Playwright with interactive UI        |
-| `pnpm test:install` | Install Playwright Chromium browser     |
+| Script              | Description                              |
+| ------------------- | ---------------------------------------- |
+| `pnpm dev`          | Start development server                  |
+| `pnpm build`        | Production build                         |
+| `pnpm start`        | Start production server                  |
+| `pnpm lint`         | Run Biome lint & format checks           |
+| `pnpm format`       | Auto-format with Biome                   |
+| `pnpm typecheck`    | Run TypeScript type checking (`tsc --noEmit`) |
+| `pnpm test`         | Run Playwright E2E tests                 |
+| `pnpm test:ui`      | Run Playwright with interactive UI       |
+| `pnpm test:install` | Install Playwright Chromium browser      |
 
 ## Git Hooks
 
 [Husky](https://typicode.github.io/husky/) manages Git hooks:
 
-- **pre-commit**: runs `nano-staged` which executes `biome check --staged` on staged files
-- **pre-push**: runs `pnpm typecheck && pnpm test`
+- **pre-commit**: runs `nano-staged`, which executes `biome check --staged` on staged files.
+- **pre-push**: runs `pnpm typecheck && pnpm test`.
 
 Hooks are installed automatically via the `prepare` script when running `pnpm install`.
 
 ## CI (GitHub Actions)
 
-The `.github/workflows/ci.yml` workflow runs on push to `main` and pull requests:
+The `.github/workflows/ci.yml` workflow runs on push to `main` and on pull requests:
 
 1. Lint (Biome)
 2. Typecheck (`tsc --noEmit`)
@@ -59,22 +105,16 @@ The `.github/workflows/ci.yml` workflow runs on push to `main` and pull requests
 
 Configure these in **Settings → Secrets and variables → Actions**:
 
-| Secret                  | Description                          |
-| ----------------------- | ------------------------------------ |
-| `NEXT_PUBLIC_SENTRY_DSN`| Sentry DSN (client + server)         |
-| `SENTRY_AUTH_TOKEN`     | Sentry auth token for source map upload |
-| `SENTRY_ORG`            | Sentry organization slug             |
-| `SENTRY_PROJECT`        | Sentry project slug                  |
+| Secret                   | Description                            |
+| ------------------------ | -------------------------------------- |
+| `NEXT_PUBLIC_SENTRY_DSN` | Sentry DSN (client + server)           |
+| `SENTRY_AUTH_TOKEN`      | Sentry auth token for source map upload |
+| `SENTRY_ORG`             | Sentry organization slug               |
+| `SENTRY_PROJECT`         | Sentry project slug                    |
 
-## Learn More
+## Documentation
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Sentry Next.js SDK](https://docs.sentry.io/platforms/javascript/guides/nextjs/)
-- [Playwright](https://playwright.dev/)
-- [Biome](https://biomejs.dev/)
+- [Component Patterns](./docs/01_COMPONENT-PATTERNS.md)
+- [Frontend Folder Structure](./docs/02_FRONTEND-FOLDER-STRUCTURE.md)
+- [TypeScript Standards](./docs/04_TYPESCRIPT-STANDARDS.md)
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
