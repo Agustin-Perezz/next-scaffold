@@ -16,6 +16,7 @@ A production-ready [Next.js](https://nextjs.org) starter built on the App Router
 | E2E             | Playwright (Chromium)                          |
 | Monitoring      | Sentry (`@sentry/nextjs`)                      |
 | Security scan   | Snyk (SARIF → GitHub Code Scanning)            |
+| Code quality    | SonarCloud (static analysis + Quality Gate)    |
 | Package manager | pnpm 9                                         |
 | Git hooks       | Husky + nano-staged                            |
 
@@ -25,7 +26,7 @@ A production-ready [Next.js](https://nextjs.org) starter built on the App Router
 next-scaffold/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                # Lint, typecheck, E2E, build pipeline
+│       └── ci.yml                # SonarCloud, lint, typecheck, E2E, build, Snyk pipeline
 ├── docs/                         # Engineering guidelines
 │   ├── 01_COMPONENT-PATTERNS.md
 │   ├── 02_FRONTEND-FOLDER-STRUCTURE.md
@@ -39,6 +40,7 @@ next-scaffold/
 │       └── utils.ts              # Shared utilities (cn, helpers)
 ├── tests/                        # Playwright E2E specs
 ├── biome.json                    # Linter & formatter config
+├── sonar-project.properties      # SonarCloud analysis configuration
 ├── next.config.ts                # Next.js configuration
 ├── package.json
 ├── playwright.config.ts
@@ -97,12 +99,16 @@ Hooks are installed automatically via the `prepare` script when running `pnpm in
 
 The `.github/workflows/ci.yml` workflow runs on push to `main` and on pull requests:
 
-1. Lint (Biome)
-2. Typecheck (`tsc --noEmit`)
-3. E2E tests (Playwright, Chromium only)
-4. Build (`next build` with Sentry source map upload)
+1. **sonar** — SonarCloud static analysis + Quality Gate (runs first; gates all other jobs)
+2. **quality** — Biome lint, TypeScript typecheck, Playwright E2E tests, and production build with Sentry source map upload
+3. **snyk** — scans dependencies for high-severity vulnerabilities and uploads the results as SARIF to GitHub Code Scanning (allowed to continue on error so findings do not block the pipeline)
 
-A `snyk` job runs in parallel, scanning dependencies for high-severity vulnerabilities and uploading the results as SARIF to GitHub Code Scanning. It is allowed to continue on error so findings do not block the pipeline.
+```
+sonar ──┬──> quality
+        └──> snyk
+```
+
+> **Note:** `SONAR_TOKEN` is the only SonarCloud secret you need to add manually. `GITHUB_TOKEN` is provided automatically by GitHub Actions. No `SONAR_HOST_URL` is required for SonarCloud.
 
 ### Required GitHub Secrets
 
@@ -110,6 +116,7 @@ Configure these in **Settings → Secrets and variables → Actions**:
 
 | Secret                   | Description                            |
 | ------------------------ | -------------------------------------- |
+| `SONAR_TOKEN`            | SonarCloud analysis token              |
 | `NEXT_PUBLIC_SENTRY_DSN` | Sentry DSN (client + server)           |
 | `SENTRY_AUTH_TOKEN`      | Sentry auth token for source map upload |
 | `SENTRY_ORG`             | Sentry organization slug               |
