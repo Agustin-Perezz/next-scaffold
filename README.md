@@ -1,6 +1,7 @@
 # next-scaffold
 
-[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_next-scaffold&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_next-scaffold)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_next-scaffold&metric=alert_status&token=5ef88f4ca9ec87efb39e7b315d9ad4cbc4b255f6)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_next-scaffold)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_next-scaffold&metric=coverage&token=5ef88f4ca9ec87efb39e7b315d9ad4cbc4b255f6)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_next-scaffold)
 
 A production-ready [Next.js](https://nextjs.org) starter that keeps server and client boundaries explicit, pushes interactivity to the leaves of the component tree, and colocates data fetching with Server Actions. The scaffold follows a shift-left approach: fast feedback (lint, typecheck, unit tests + coverage) runs first, then SonarCloud analysis (importing the coverage report), then the production build, and finally the expensive E2E suite — so issues are caught as early and cheaply as possible in the development cycle.
 
