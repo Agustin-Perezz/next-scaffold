@@ -24,17 +24,19 @@ export default defineConfig({
       reporter: ["text", "text-summary", "lcov", "clover"],
       reportsDirectory: "./coverage",
       include: ["src/**/*.{ts,tsx}"],
+      // Mirrors sonar.coverage.exclusions so the local report and SonarCloud
+      // agree on the measured surface. Keep these two lists in lockstep.
+      //
+      // src/components/ui/** (shadcn / base-ui primitives) are thin
+      // presentational wrappers exercised through routes + E2E, so they are
+      // excluded from the coverage gate rather than unit-tested.
       exclude: [
         "src/**/*.d.ts",
         "src/sentry.client.config.ts",
         "src/sentry.edge.config.ts",
         "src/sentry.server.config.ts",
         "src/instrumentation.ts",
-        "src/components/ui/file-dropzone.tsx",
-        "src/components/ui/file-dropzone-region.tsx",
-        "src/components/ui/file-dropzone-preview.tsx",
-        "src/components/ui/file-dropzone-preview-item.tsx",
-        "src/components/ui/file-dropzone-types.ts",
+        "src/components/ui/**",
         "src/hooks/useFileDropzone.ts",
         "src/lib/utils/dropzone-errors.ts",
       ],
