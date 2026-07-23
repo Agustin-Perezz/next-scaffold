@@ -5,12 +5,14 @@ Next.js (App Router) starter with React 19, TypeScript strict mode, base-ui + sh
 ## Commands
 
 ```bash
-pnpm dev          # Start dev server
-pnpm typecheck    # TypeScript type checking (tsc --noEmit)
-pnpm lint         # Biome check
-pnpm format       # Biome format --write
-pnpm test         # Playwright run
-pnpm test:ui      # Playwright UI mode
+pnpm dev            # Start dev server
+pnpm typecheck      # TypeScript type checking (tsc --noEmit)
+pnpm lint           # Biome check
+pnpm format         # Biome format --write
+pnpm test           # Run unit tests (Vitest)
+pnpm test:coverage  # Run unit tests with coverage (writes coverage/lcov.info)
+pnpm test:e2e       # Run Playwright E2E tests
+pnpm test:ui        # Playwright UI mode
 ```
 
 ## Key Constraints
@@ -29,4 +31,4 @@ If you need to write frontend code, see [Component Patterns](./docs/01_COMPONENT
 
 If you need to write TypeScript, see [TypeScript Standards](./docs/04_TYPESCRIPT-STANDARDS.md).
 
-If you need to write tests, see Playwright patterns in the `tests/` directory and `playwright.config.ts`.
+If you need to write tests, see Playwright patterns in the `tests/` directory and `playwright.config.ts` (E2E), and Vitest patterns in `tests/unit/` and `vitest.config.ts` (unit/component). Unit tests live under `tests/unit/**/*.{test,spec}.{ts,tsx}`; E2E specs live under `tests/` (Playwright `testDir`).

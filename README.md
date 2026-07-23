@@ -2,7 +2,7 @@
 
 [![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_next-scaffold&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_next-scaffold)
 
-A production-ready [Next.js](https://nextjs.org) starter that keeps server and client boundaries explicit, pushes interactivity to the leaves of the component tree, and colocates data fetching with Server Actions. The scaffold follows a shift-left approach: linting, type checking, security scanning, and E2E tests run on every push and pull request so issues are caught as early as possible in the development cycle.
+A production-ready [Next.js](https://nextjs.org) starter that keeps server and client boundaries explicit, pushes interactivity to the leaves of the component tree, and colocates data fetching with Server Actions. The scaffold follows a shift-left approach: fast feedback (lint, typecheck, unit tests + coverage) runs first, then SonarCloud analysis (importing the coverage report), then the production build, and finally the expensive E2E suite — so issues are caught as early and cheaply as possible in the development cycle.
 
 ## Tech Stack
 
@@ -15,6 +15,8 @@ A production-ready [Next.js](https://nextjs.org) starter that keeps server and c
 | Styling         | Tailwind CSS v4                                |
 | Forms           | react-hook-form + zod                          |
 | Lint / Format   | Biome 2                                        |
+| Unit tests      | Vitest + Testing Library (jsdom)               |
+| Coverage        | `@vitest/coverage-istanbul` (lcov → SonarCloud) |
 | E2E             | Playwright (Chromium)                          |
 | Monitoring      | Sentry (`@sentry/nextjs`)                      |
 | Security scan   | Snyk (SARIF → GitHub Code Scanning)            |
@@ -28,7 +30,7 @@ A production-ready [Next.js](https://nextjs.org) starter that keeps server and c
 next-scaffold/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                # SonarCloud, lint, typecheck, E2E, build, Snyk pipeline
+│       └── ci.yml                # Shift-left chain: static → unit → sonar → build → e2e (+ snyk)
 ├── docs/                         # Engineering guidelines
 │   ├── 01_COMPONENT-PATTERNS.md
 │   ├── 02_FRONTEND-FOLDER-STRUCTURE.md
@@ -40,12 +42,13 @@ next-scaffold/
 │   │   └── ui/                   # Reusable base-ui / shadcn primitives
 │   └── lib/
 │       └── utils.ts              # Shared utilities (cn, helpers)
-├── tests/                        # Playwright E2E specs
+├── tests/                        # Playwright E2E specs + Vitest unit tests (tests/unit/)
 ├── biome.json                    # Linter & formatter config
 ├── sonar-project.properties      # SonarCloud analysis configuration
 ├── next.config.ts                # Next.js configuration
 ├── package.json
 ├── playwright.config.ts
+├── vitest.config.ts              # Unit test + coverage configuration
 └── tsconfig.json                 # Path alias: @/* -> ./src/*
 ```
 
@@ -76,41 +79,48 @@ The app runs at [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Script              | Description                              |
-| ------------------- | ---------------------------------------- |
-| `pnpm dev`          | Start development server                  |
-| `pnpm build`        | Production build                         |
-| `pnpm start`        | Start production server                  |
-| `pnpm lint`         | Run Biome lint & format checks           |
-| `pnpm format`       | Auto-format with Biome                   |
-| `pnpm typecheck`    | Run TypeScript type checking (`tsc --noEmit`) |
-| `pnpm test`         | Run Playwright E2E tests                 |
-| `pnpm test:ui`      | Run Playwright with interactive UI       |
-| `pnpm test:install` | Install Playwright Chromium browser      |
+| Script                | Description                              |
+| --------------------- | ---------------------------------------- |
+| `pnpm dev`            | Start development server                  |
+| `pnpm build`          | Production build                         |
+| `pnpm start`          | Start production server                  |
+| `pnpm lint`           | Run Biome lint & format checks           |
+| `pnpm format`         | Auto-format with Biome                   |
+| `pnpm typecheck`      | Run TypeScript type checking (`tsc --noEmit`) |
+| `pnpm test`           | Run unit tests (Vitest)                  |
+| `pnpm test:unit`      | Run unit tests (Vitest)                  |
+| `pnpm test:unit:watch`| Run unit tests in watch mode             |
+| `pnpm test:coverage`  | Run unit tests with coverage (writes `coverage/lcov.info`) |
+| `pnpm test:e2e`       | Run Playwright E2E tests                 |
+| `pnpm test:ui`        | Run Playwright with interactive UI       |
+| `pnpm test:install`   | Install Playwright Chromium browser      |
 
 ## Git Hooks
 
 [Husky](https://typicode.github.io/husky/) manages Git hooks:
 
 - **pre-commit**: runs `nano-staged`, which executes `biome check --staged` on staged files.
-- **pre-push**: runs `pnpm typecheck && pnpm test`.
+- **pre-push**: runs `pnpm typecheck && pnpm test:unit` (fast unit tests — E2E runs in CI, not on push).
 
 Hooks are installed automatically via the `prepare` script when running `pnpm install`.
 
 ## CI (GitHub Actions)
 
-The `.github/workflows/ci.yml` workflow runs on push to `main` and on pull requests:
+The `.github/workflows/ci.yml` workflow runs on push to `main` and on pull requests as a shift-left, fail-fast chain — each stage gates the next, so a red PR never wastes SonarCloud tokens or browser minutes:
 
-1. **sonar** — SonarCloud static analysis + Quality Gate (runs first; gates all other jobs)
-2. **quality** — Biome lint, TypeScript typecheck, Playwright E2E tests, and production build with Sentry source map upload
-3. **snyk** — scans dependencies for high-severity vulnerabilities and uploads the results as SARIF to GitHub Code Scanning (allowed to continue on error so findings do not block the pipeline)
+1. **static** — Biome lint + TypeScript typecheck (fast gate)
+2. **unit** — Vitest unit tests with coverage; uploads the `coverage-report` artifact (contains `lcov.info`)
+3. **sonar** — SonarCloud static analysis + Quality Gate, importing the coverage report produced by `unit`
+4. **build** — production build with Sentry source map upload
+5. **e2e** — Playwright E2E tests (runs **last** — the most expensive stage)
+6. **snyk** — scans dependencies for high-severity vulnerabilities and uploads the results as SARIF to GitHub Code Scanning (runs in parallel off `sonar`; allowed to continue on error so findings do not block the pipeline)
 
 ```
-sonar ──┬──> quality
-        └──> snyk
+static ──> unit ──> sonar ──┬──> build ──> e2e
+                           └──> snyk
 ```
 
-> **Note:** `SONAR_TOKEN` is the only SonarCloud secret you need to add manually. `GITHUB_TOKEN` is provided automatically by GitHub Actions. No `SONAR_HOST_URL` is required for SonarCloud.
+Coverage feeds the SonarCloud Quality Gate: `pnpm test:coverage` writes `coverage/lcov.info`, which `sonar-project.properties` points SonarCloud at via `sonar.javascript.lcov.reportPaths`. The Quality Gate enforces **Coverage on new code ≥ 80%** (configured in the SonarCloud UI) — a delta gate that does not penalize pre-existing uncovered code.
 
 ### Required GitHub Secrets
 
