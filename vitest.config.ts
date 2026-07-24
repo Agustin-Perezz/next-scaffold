@@ -15,7 +15,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./tests/unit/setup.ts"],
     include: ["tests/unit/**/*.{test,spec}.{ts,tsx}"],
-    exclude: ["node_modules", ".next", "tests/smoke.spec.ts"],
+    exclude: ["node_modules", ".next"],
     coverage: {
       provider: "istanbul",
       reporter: ["text", "text-summary", "lcov", "clover"],
