@@ -85,4 +85,4 @@ if (!query) {
 }
 ```
 
-If a utility function exists in more than one file, extract it to `@/lib/utils/` and import from there. The `@/*` path alias maps to `./src/*` (see `tsconfig.json`).
+If a utility function exists in more than one file, extract it to `@/lib/` and import from there. The `@/*` path alias maps to `./src/*` (see `tsconfig.json`).

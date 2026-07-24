@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { FetchState } from "@/lib/utils/http";
-import { INITIAL_FETCH_STATE, parseJson } from "@/lib/utils/http";
+import type { FetchState } from "@/lib/http";
+import { INITIAL_FETCH_STATE, parseJson } from "@/lib/http";
 
 export function useFetch<T>(url: string): FetchState<T> {
   const [state, setState] = useState<FetchState<T>>(INITIAL_FETCH_STATE);

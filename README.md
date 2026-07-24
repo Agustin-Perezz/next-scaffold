@@ -123,6 +123,19 @@ static ──> unit ──> sonar ──┬──> build ──> e2e
 
 Coverage feeds the SonarCloud Quality Gate: `pnpm test:coverage` writes `coverage/lcov.info`, which `sonar-project.properties` points SonarCloud at via `sonar.javascript.lcov.reportPaths`. The Quality Gate enforces **Coverage on new code ≥ 80%** (configured in the SonarCloud UI) — a delta gate that does not penalize pre-existing uncovered code.
 
+### Coverage Scope
+
+Coverage is deliberately scoped to **`src/app/**`** (routes, pages, Server Actions, per-feature components) and **`src/hooks/**`**. `src/components/**` (shared UI primitives, presentational wrappers) and `src/lib/**` (utilities) are excluded from the coverage gate and exercised through Playwright E2E instead.
+
+**Rationale:** UI primitives and utilities are thin, often generic, and better validated by end-to-end user flows than by per-file unit tests. Scoping the gate lets the team write fewer unit tests and lean on E2E for those surfaces, while keeping unit coverage on the code that actually branches per route (pages, actions, feature components, hooks).
+
+**How it works (lockstep invariant):** Sonar has no coverage whitelist property — any source file absent from the LCOV report is counted as 0% covered unless it is listed in `sonar.coverage.exclusions`. The two configs must therefore agree:
+
+- `vitest.config.ts` `coverage.include` — the whitelist of files Vitest instruments (and thus appear in LCOV).
+- `sonar-project.properties` `sonar.coverage.exclusions` — the complementary blacklist; every file **not** in `coverage.include` must be listed here or it tanks the gate.
+
+**Scalability:** new files under `src/app/**` or `src/hooks/**` are automatically measured; new files under `src/components/**` or `src/lib/**` are automatically excluded. Adding a new top-level `src/` directory (e.g. `src/services/`) requires a matching line in `sonar.coverage.exclusions`.
+
 ### Required GitHub Secrets
 
 Configure these in **Settings → Secrets and variables → Actions**:
