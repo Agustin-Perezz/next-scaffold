@@ -29,6 +29,6 @@ Required env vars must fail loudly—if missing, the app crashes, no defaults.
 
 If you need to write frontend code, see [Component Patterns](./docs/01_COMPONENT-PATTERNS.md) and [Frontend Folder Structure](./docs/02_FRONTEND-FOLDER-STRUCTURE.md).
 
-If you need to write TypeScript, see [TypeScript Standards](./docs/04_TYPESCRIPT-STANDARDS.md).
+If you need to write TypeScript, see [TypeScript Standards](./docs/03_TYPESCRIPT-STANDARDS.md).
 
-If you need to write tests, see Playwright patterns in the `tests/` directory and `playwright.config.ts` (E2E), and Vitest patterns in `tests/unit/` and `vitest.config.ts` (unit/component). Unit tests live under `tests/unit/**/*.{test,spec}.{ts,tsx}`; E2E specs live under `tests/` (Playwright `testDir`).
+If you need to write tests, see Playwright patterns in the `tests/e2e/` directory and `playwright.config.ts` (E2E), and Vitest patterns in `tests/unit/` and `vitest.config.ts` (unit/component). Unit tests live under `tests/unit/**/*.{test,spec}.{ts,tsx}`; E2E specs live under `tests/e2e/` (Playwright `testDir` is `tests/`).

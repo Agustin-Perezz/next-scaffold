@@ -35,7 +35,7 @@ next-scaffold/
 ├── docs/                         # Engineering guidelines
 │   ├── 01_COMPONENT-PATTERNS.md
 │   ├── 02_FRONTEND-FOLDER-STRUCTURE.md
-│   └── 04_TYPESCRIPT-STANDARDS.md
+│   └── 03_TYPESCRIPT-STANDARDS.md
 ├── public/                       # Static assets served at root
 ├── src/
 │   ├── app/                      # App Router routes (pages, layouts, actions)
@@ -43,7 +43,7 @@ next-scaffold/
 │   │   └── ui/                   # Reusable base-ui / shadcn primitives
 │   └── lib/
 │       └── utils.ts              # Shared utilities (cn, helpers)
-├── tests/                        # Playwright E2E specs + Vitest unit tests (tests/unit/)
+├── tests/                        # Playwright E2E specs (tests/e2e/) + Vitest unit tests (tests/unit/)
 ├── biome.json                    # Linter & formatter config
 ├── sonar-project.properties      # SonarCloud analysis configuration
 ├── next.config.ts                # Next.js configuration
@@ -101,7 +101,7 @@ The app runs at [http://localhost:3000](http://localhost:3000).
 [Husky](https://typicode.github.io/husky/) manages Git hooks:
 
 - **pre-commit**: runs `nano-staged`, which executes `biome check --staged` on staged files.
-- **pre-push**: runs `pnpm typecheck && pnpm test:unit` (fast unit tests — E2E runs in CI, not on push).
+- **pre-push**: runs `pnpm typecheck && pnpm test:unit && pnpm test:e2e` (typecheck + unit tests + E2E).
 
 Hooks are installed automatically via the `prepare` script when running `pnpm install`.
 
@@ -153,5 +153,5 @@ Configure these in **Settings → Secrets and variables → Actions**:
 
 - [Component Patterns](./docs/01_COMPONENT-PATTERNS.md)
 - [Frontend Folder Structure](./docs/02_FRONTEND-FOLDER-STRUCTURE.md)
-- [TypeScript Standards](./docs/04_TYPESCRIPT-STANDARDS.md)
+- [TypeScript Standards](./docs/03_TYPESCRIPT-STANDARDS.md)
 
