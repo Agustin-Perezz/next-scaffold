@@ -7,7 +7,7 @@ import {
   DEFAULT_MAX_SIZE_BYTES,
   type FileDropzoneProps,
 } from "@/components/ui/file-dropzone-types";
-import { getDropzoneErrorMessage } from "@/lib/utils/dropzone-errors";
+import { getDropzoneErrorMessage } from "@/lib/dropzone-errors";
 
 export type UseFileDropzoneOptions = Pick<
   FileDropzoneProps,
