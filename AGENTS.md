@@ -21,8 +21,6 @@ Never use magic strings—always use named constants or enums for values that co
 
 Never declare inline types in function parameters—use type aliases instead.
 
-Server Actions and data fetchers live in `actions.ts` with `"use server"`. Keep the `"use client"` boundary as low in the tree as possible—prefer Server Components and push client directives down to leaf components.
-
 Required env vars must fail loudly—if missing, the app crashes, no defaults.
 
 ## Guidelines
@@ -30,5 +28,7 @@ Required env vars must fail loudly—if missing, the app crashes, no defaults.
 If you need to write frontend code, see [Component Patterns](./docs/01_COMPONENT-PATTERNS.md) and [Frontend Folder Structure](./docs/02_FRONTEND-FOLDER-STRUCTURE.md).
 
 If you need to write TypeScript, see [TypeScript Standards](./docs/03_TYPESCRIPT-STANDARDS.md).
+
+If you need to write application code, see [Clean Code](./docs/04_CLEAN-CODE.md).
 
 If you need to write tests, see Playwright patterns in the `tests/e2e/` directory and `playwright.config.ts` (E2E), and Vitest patterns in `tests/unit/` and `vitest.config.ts` (unit/component). Unit tests live under `tests/unit/**/*.{test,spec}.{ts,tsx}`; E2E specs live under `tests/e2e/` (Playwright `testDir` is `tests/`).
