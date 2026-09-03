@@ -2,7 +2,7 @@
 
 ## `satisfies` Operator
 
-Use `satisfies` to validate an object matches a type while retaining the most specific inferred type:
+Use `satisfies` to validate an object against a type. It keeps the most specific inferred type:
 
 ```ts
 const config = { width: 100, height: 200 } satisfies Dimensions;
@@ -22,7 +22,7 @@ function assertString(val: unknown): asserts val is string {
 
 ## Type vs Interface
 
-Use `type` by default. Only use `interface` when you need declaration merging or extending:
+Use `type` by default. Only use `interface` when you need declaration merging or when you extend another type:
 
 ```ts
 // BAD — interface used when type suffices
@@ -54,7 +54,7 @@ type ButtonProps = ComponentProps<"button"> & { variant?: ButtonVariant };
 ## Strict Rules
 
 - **`any` is forbidden** — use `unknown` with type guards
-- **Use `satisfies`** instead of explicit annotations when you need both validation and inference
+- **When you need both validation and inference, use `satisfies` instead of explicit annotations**
 
   ```ts
   export enum OrderStatus {

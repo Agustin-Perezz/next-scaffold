@@ -49,7 +49,7 @@ function processOrder(order: Order): void {
 
 ## Guard clauses over nesting
 
-Flatten deep nesting by returning early. The happy path stays at the top level, unindented.
+Return early to flatten deep nesting. The happy path stays at the top level, unindented.
 
 ```ts
 // ❌ Bad — arrow-shaped, buries the happy path
@@ -80,7 +80,7 @@ function getDiscount(user: User): number | null {
 
 ## Descriptive names
 
-Names state **what** and **why**, not how. No `data`, `temp`, `info`, `x` outside narrow numeric scope.
+Names state **what** and **why**, not how. Do not use `data`, `temp`, `info`, or `x` outside narrow numeric scope.
 
 ```ts
 // ❌ Bad
@@ -92,9 +92,9 @@ const trialStartDate = new Date();
 const activeUsers = users.filter((user) => user.isActive);
 ```
 
-## DRY — extract, don't duplicate
+## DRY — extract, do not duplicate
 
-The third time you write the same logic, extract it. But don't pre-extract for hypothetical reuse (YAGNI).
+The third time you write the same logic, extract it. But do not pre-extract for hypothetical reuse (YAGNI).
 
 ```ts
 // ❌ Bad — repeated formatting
@@ -110,7 +110,7 @@ function formatDate(iso: string): string {
 
 ## Comments sparingly
 
-Code explains **how**; comments explain **why** when the why isn't obvious. Don't restate the code.
+Code explains **how**. Comments explain **why** when the why is not obvious. Do not restate the code.
 
 ```ts
 // ❌ Bad — restates code

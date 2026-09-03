@@ -3,12 +3,12 @@
 ## Size Limits
 
 - **50-line hard limit per component** - no exceptions
-- **Proactive split at 40 lines** - do not wait until hitting 50
+- **Proactive split at 40 lines** - do not wait until a component reaches 50 lines
 - One concern per file - a form component does not contain a list, a list does not contain a modal
 
 ## Page Components
 
-`page.tsx` is composition-only: it imports and arranges components, nothing else. No logic, no inline styles, no conditionals beyond prop-passing. Server data is fetched in the page (async Server Component) and passed down to presentational components.
+`page.tsx` is composition-only: it imports and arranges components, nothing else. No logic, no inline styles, no conditionals beyond prop-passing. The page (async Server Component) fetches server data and passes it down to presentational components.
 
 ```tsx
 import { ProductCreateForm } from "./components/ProductCreateForm";
@@ -59,7 +59,7 @@ useEffect(() => {
 }, [chartData]);
 ```
 
-Use `useEffect` only for side effects (DOM, third-party libs). Prefer deriving with `useMemo` over recomputing in render, and prefer Server Components over `useState` whenever the value does not need to live on the client.
+Use `useEffect` only for side effects (DOM, third-party libs). Prefer `useMemo` for derived values. Use Server Components when the value does not need to live on the client.
 
 For actions that mutate state, use Server Actions or `useTransition`/`useActionState` instead of hand-rolled fetch state:
 
@@ -110,7 +110,7 @@ const [books, setBooks] = useState(data.books);
 const books = useMemo(() => data.books, [data.books]);
 ```
 
-Use two-way binding (`bind:value` equivalents) only when strictly necessary; React 19 allows `use(value)` for consuming context without `<Context.Consumer>`.
+Use two-way binding (`bind:value` equivalents) only when it is strictly necessary. With `use(value)`, you can consume context without `<Context.Consumer>`.
 
 ## SOLID Principles
 
@@ -120,7 +120,7 @@ Each component does one thing. See [Frontend Folder Structure](./02_FRONTEND-FOL
 
 ### Open/Closed
 
-Use `children` and render props to let consumers extend component UI without modifying source:
+Use `children` and render props so that consumers can extend the component UI without source changes:
 
 ```tsx
 type Props = {
@@ -171,4 +171,4 @@ export async function GET(request: Request) {
 }
 ```
 
-For Server Actions and Route Handlers, construct the container at call time - never share module-level singletons that hold request-scoped resources.
+For Server Actions and Route Handlers, construct the container at call time. Do not share module-level singletons that hold request-scoped resources.
