@@ -36,7 +36,7 @@ export function FileDropzonePreview({
     >
       {files.map((file, index) => (
         <FileDropzonePreviewItem
-          key={`${file.name}-${index}`}
+          key={crypto.randomUUID()}
           file={file}
           previewUrl={previews[index]}
           onRemove={onRemove ? () => onRemove(index) : undefined}
