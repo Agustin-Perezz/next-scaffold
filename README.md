@@ -3,7 +3,7 @@
 [![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_next-scaffold&metric=alert_status&token=5ef88f4ca9ec87efb39e7b315d9ad4cbc4b255f6)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_next-scaffold)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Agustin-Perezz_next-scaffold&metric=coverage&token=5ef88f4ca9ec87efb39e7b315d9ad4cbc4b255f6)](https://sonarcloud.io/summary/new_code?id=Agustin-Perezz_next-scaffold)
 
-A production-ready [Next.js](https://nextjs.org) starter that keeps server and client boundaries explicit, pushes interactivity to the leaves of the component tree, and colocates data fetching with Server Actions. The scaffold follows a shift-left approach: fast feedback (lint, typecheck, unit tests + coverage) runs first, then SonarCloud analysis (importing the coverage report), then the production build, and finally the expensive E2E suite — so issues are caught as early and cheaply as possible in the development cycle.
+A production-ready [Next.js](https://nextjs.org) starter. It keeps server and client boundaries explicit. It colocates data fetching with Server Actions and pushes interactivity to the component leaves. The scaffold follows a shift-left approach. Fast feedback (lint, typecheck, unit tests + coverage) runs first. Then SonarCloud analysis imports the coverage report. Then the production build runs. The expensive E2E suite runs last. This order catches issues early and cheaply.
 
 ## Tech Stack
 
@@ -45,7 +45,7 @@ next-scaffold/
 │       └── utils.ts              # Shared utilities (cn, helpers)
 ├── tests/                        # Playwright E2E specs (tests/e2e/) + Vitest unit tests (tests/unit/)
 ├── biome.json                    # Linter & formatter config
-├── sonar-project.properties      # SonarCloud analysis configuration
+├── sonar-project.properties      # SonarCloud analysis config
 ├── next.config.ts                # Next.js configuration
 ├── package.json
 ├── playwright.config.ts
@@ -53,7 +53,7 @@ next-scaffold/
 └── tsconfig.json                 # Path alias: @/* -> ./src/*
 ```
 
-See [`AGENTS.md`](./AGENTS.md) for the engineering conventions agents and contributors should follow.
+See [`AGENTS.md`](./AGENTS.md) for the engineering conventions for agents and contributors.
 
 ## Setup
 
@@ -103,18 +103,18 @@ The app runs at [http://localhost:3000](http://localhost:3000).
 - **pre-commit**: runs `nano-staged`, which executes `biome check --staged` on staged files.
 - **pre-push**: runs `pnpm typecheck && pnpm test:unit && pnpm test:e2e` (typecheck + unit tests + E2E).
 
-Hooks are installed automatically via the `prepare` script when running `pnpm install`.
+The `prepare` script installs the hooks automatically when you run `pnpm install`.
 
 ## CI (GitHub Actions)
 
-The `.github/workflows/ci.yml` workflow runs on push to `main` and on pull requests as a shift-left, fail-fast chain — each stage gates the next, so a red PR never wastes SonarCloud tokens or browser minutes:
+The `.github/workflows/ci.yml` workflow runs on push to `main` and on pull requests. It is a shift-left, fail-fast chain. Each stage gates the next, so a red PR never wastes SonarCloud tokens or browser minutes:
 
 1. **static** — Biome lint + TypeScript typecheck (fast gate)
-2. **unit** — Vitest unit tests with coverage; uploads the `coverage-report` artifact (contains `lcov.info`)
+2. **unit** — Vitest unit tests with coverage. Uploads the `coverage-report` artifact (contains `lcov.info`)
 3. **sonar** — SonarCloud static analysis + Quality Gate, importing the coverage report produced by `unit`
 4. **build** — production build with Sentry source map upload
 5. **e2e** — Playwright E2E tests (runs **last** — the most expensive stage)
-6. **snyk** — scans dependencies for high-severity vulnerabilities and uploads the results as SARIF to GitHub Code Scanning (runs in parallel off `sonar`; allowed to continue on error so findings do not block the pipeline)
+6. **snyk** — scans dependencies for high-severity vulnerabilities and uploads the results as SARIF to GitHub Code Scanning. It runs in parallel off `sonar` and continues on error, so findings do not block the pipeline.
 
 ```
 static ──> unit ──> sonar ──┬──> build ──> e2e
@@ -127,14 +127,14 @@ Coverage feeds the SonarCloud Quality Gate: `pnpm test:coverage` writes `coverag
 
 Coverage is deliberately scoped to **`src/app/**`** (routes, pages, Server Actions, per-feature components) and **`src/hooks/**`**. `src/components/**` (shared UI primitives, presentational wrappers) and `src/lib/**` (utilities) are excluded from the coverage gate and exercised through Playwright E2E instead.
 
-**Rationale:** UI primitives and utilities are thin, often generic, and better validated by end-to-end user flows than by per-file unit tests. Scoping the gate lets the team write fewer unit tests and lean on E2E for those surfaces, while keeping unit coverage on the code that actually branches per route (pages, actions, feature components, hooks).
+**Rationale:** UI primitives and utilities are thin, often generic, and better validated by end-to-end user flows than by per-file unit tests. Scoping the gate lets the team write fewer unit tests. E2E covers those surfaces. Unit coverage stays on the code that branches per route (pages, actions, feature components, hooks).
 
-**How it works (lockstep invariant):** Sonar has no coverage whitelist property — any source file absent from the LCOV report is counted as 0% covered unless it is listed in `sonar.coverage.exclusions`. The two configs must therefore agree:
+**How it works (lockstep invariant):** Sonar has no coverage whitelist property. Sonar counts any source file that the LCOV report does not list as 0% covered, unless `sonar.coverage.exclusions` lists it. The two configs must therefore agree:
 
 - `vitest.config.ts` `coverage.include` — the whitelist of files Vitest instruments (and thus appear in LCOV).
-- `sonar-project.properties` `sonar.coverage.exclusions` — the complementary blacklist; every file **not** in `coverage.include` must be listed here or it tanks the gate.
+- `sonar-project.properties` `sonar.coverage.exclusions` — the complementary blacklist. Sonar requires an entry here for every file **not** in `coverage.include`, or the file tanks the gate.
 
-**Scalability:** new files under `src/app/**` or `src/hooks/**` are automatically measured; new files under `src/components/**` or `src/lib/**` are automatically excluded. Adding a new top-level `src/` directory (e.g. `src/services/`) requires a matching line in `sonar.coverage.exclusions`.
+**Scalability:** Vitest automatically measures new files under `src/app/**` or `src/hooks/**`. It automatically excludes new files under `src/components/**` or `src/lib/**`. Adding a new top-level `src/` directory (for example `src/services/`) requires a matching line in `sonar.coverage.exclusions`.
 
 ### Required GitHub Secrets
 

@@ -24,11 +24,11 @@ src/app/{feature}/
 
 ## Rules
 
-- `page.tsx` is composition-only: imports and arranges components, nothing else. No logic, no inline styles, no conditionals beyond prop-passing. Server data fetching happens here (async Server Component) and the data is passed down as props.
+- `page.tsx` is composition-only: imports and arranges components, nothing else. No logic, no inline styles, no conditionals beyond prop-passing. The page (async Server Component) fetches the server data and passes it down as props.
 - `actions.ts` handles all server logic: data fetchers and Server Actions (`"use server"`). See [Component Patterns](./01_COMPONENT-PATTERNS.md) for the container and use-case wiring pattern.
-- `components/` holds every sub-component for that route. Component files are named with the feature prefix (e.g. `ProductCard`, not `Card`).
-- Components that use hooks, events, or browser APIs must start with `"use client"`. Keep the server/client boundary as low in the tree as possible - prefer Server Components and push `"use client"` down to leaf components.
-- `hooks/` holds route-private hooks. Hook files are named `use{Feature}{Behavior}.ts` (e.g. `useProductFilters.ts`). Hooks that touch browser APIs are implicitly client-only and must not be imported by Server Components.
+- `components/` holds every sub-component for that route. Component files are named with the feature prefix (for example `ProductCard`, not `Card`).
+- Components that use hooks, events, or browser APIs must start with `"use client"`. Keep the server/client boundary low in the tree. Prefer Server Components. Push `"use client"` down to the leaf components.
+- `hooks/` holds route-private hooks. Hook files are named `use{Feature}{Behavior}.ts` (for example `useProductFilters.ts`). Hooks that touch browser APIs are implicitly client-only, and Server Components must not import them.
 
 ## Example
 
@@ -49,7 +49,7 @@ src/app/products/
 
 ## Root Layout
 
-`src/app/layout.tsx` renders the `<html>`/`<body>` shell, fonts, and global providers (e.g. Toaster). No nested layouts unless strictly required.
+`src/app/layout.tsx` renders the `<html>`/`<body>` shell, fonts, and global providers (for example Toaster). No nested layouts unless strictly required.
 
 ```tsx
 export default function RootLayout({
