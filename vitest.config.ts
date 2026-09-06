@@ -20,9 +20,15 @@ export default defineConfig({
       provider: "istanbul",
       reporter: ["text", "text-summary", "lcov", "clover"],
       reportsDirectory: "./coverage",
+      // Coverage scope: routes/pages entry points, server actions, route handlers,
+      // business-logic files (schemas/mappers/validators), and custom hooks.
+      // Components (wherever they live) are exercised via Playwright E2E, not unit
+      // coverage — same rationale as excluding src/components/. Keep in lockstep
+      // with sonar-project.properties `sonar.coverage.exclusions`.
       include: ["src/app/**/*.{ts,tsx}", "src/hooks/**/*.{ts,tsx}"],
       exclude: [
         "src/**/*.d.ts",
+        "src/**/components/**",
         "src/sentry.client.config.ts",
         "src/sentry.edge.config.ts",
         "src/sentry.server.config.ts",
